@@ -1,0 +1,20 @@
+﻿version: '3.8'
+services:
+  api:
+    container_name: key-exchange-api
+    build:
+      dockerfile: Dockerfile
+      context: KeyExchangeAPI\KeyExchangeAPI\
+    ports:
+      - "8080:80"
+      - "4430:443"
+    depends_on:
+      - database
+
+  database:
+    container_name: key-exchange-database
+    image: postgres:latest
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
