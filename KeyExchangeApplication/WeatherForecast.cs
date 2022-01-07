@@ -1,4 +1,4 @@
-namespace API;
+namespace KeyExchangeApplication;
 
 public class WeatherForecast
 {

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers;
+namespace KeyExchangeApplication.Controllers;
 
 [ApiController]
 [Route("[controller]")]

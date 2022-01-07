@@ -1,20 +1,25 @@
 ﻿version: '3.8'
 services:
-  api:
+  KeyExchangeAPI:
     container_name: key-exchange-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+      - CONNECTION_STRING=${CONNECTION_STRING}
     build:
       dockerfile: Dockerfile
-      context: KeyExchangeAPI\KeyExchangeAPI\
     ports:
       - "8080:80"
       - "4430:443"
     depends_on:
       - database
 
-  database:
-    container_name: key-exchange-database
-    image: postgres:latest
+  Database:
+    container_name: key-echange-database
+    image: postgres:14.1
     ports:
-      - "5433:5432"
+      - "5432:5432"
+    env_file:
+      - secret.env
     environment:
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
