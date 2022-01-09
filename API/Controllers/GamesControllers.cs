@@ -4,7 +4,6 @@ using API.Catalog;
 using API.DbContext;
 using API.DTO;
 using API.Utils;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using NuGet.Protocol;
 
@@ -27,18 +26,19 @@ public class GamesControllers : ControllerBase
     public async Task<ActionResult<IEnumerable<GameDto>>> GetGames()
     {
         var games = await _context.Games.ToListAsync();
-        var gameDtos = AutoMapperUtils.BasicAutoMapper<List<Game>, List<GameDto>>(games);
+        var gameDtos = AutoMapperUtils.BasicAutoMapper<Game, GameDto>(games);
         return Ok(gameDtos.ToJson());
     }
     
     // GET: api/GamesControllers
-    [HttpGet("admin")]
+    [HttpGet("admin"), Authorize(Roles = "root")]
     public async Task<ActionResult<IEnumerable<Game>>> GetGamesAdmin()
     {
         return await _context.Games.ToListAsync();
     }
 
     // GET: api/GamesControllers/5
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<ActionResult<Game>> GetGame(Guid id)
     {
@@ -54,7 +54,7 @@ public class GamesControllers : ControllerBase
 
     // PUT: api/GamesControllers/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id:guid}")]
+    [HttpPut("{id:guid}"), Authorize(Roles = "root")]
     public async Task<IActionResult> PutGame(Guid id, Game game)
     {
         if (id != game.Id)
@@ -83,7 +83,7 @@ public class GamesControllers : ControllerBase
 
     // POST: api/GamesControllers
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPost]
+    [HttpPost, Authorize(Roles = "root")]
     public async Task<ActionResult<Game>> PostGame(Game game)
     {
         _context.Games.Add(game);
@@ -93,7 +93,7 @@ public class GamesControllers : ControllerBase
     }
 
     // DELETE: api/GamesControllers/5
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}"), Authorize(Roles = "root")]
     public async Task<IActionResult> DeleteGame(Guid id)
     {
         var game = await _context.Games.FindAsync(id);

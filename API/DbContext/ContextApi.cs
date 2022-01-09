@@ -1,5 +1,5 @@
-
 using API.Catalog;
+using API.DAL;
 using API.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,8 +10,9 @@ public class ContextApi : Microsoft.EntityFrameworkCore.DbContext
     private readonly IConfiguration _configuration;
 
     public DbSet<UserApplication> Users { get; set; }
-    public DbSet<ClaimDemand> ClaimDemands { get; set; }
+    public DbSet<GameDemand> GameDemands { get; set; }
     public DbSet<Game> Games { get; set; }
+    public DbSet<RoleClaim> RoleClaims { get; set; }
     public DbSet<UserProfile> UserProfiles { get; set; }
     public DbSet<Role> Roles { get; set; }
 
@@ -34,8 +35,9 @@ public class ContextApi : Microsoft.EntityFrameworkCore.DbContext
 
         modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<Role>());
         modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<UserProfile>());
-        modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<ClaimDemand>());
+        modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<GameDemand>());
         modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<Game>());
+        modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<RoleClaim>());
 
         base.OnModelCreating(modelBuilder);
     }

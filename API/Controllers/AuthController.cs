@@ -1,13 +1,15 @@
-﻿using API.DbContext;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using API.DbContext;
 using API.DTO;
 using API.Identity;
+using API.Service;
 using API.Utils;
-using AutoMapper;
 using Isopoh.Cryptography.Argon2;
-using JWT.Algorithms;
-using JWT.Builder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers;
 
@@ -15,13 +17,13 @@ namespace API.Controllers;
 [Route("[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly ILogger<AuthController> _logger;
     private readonly IConfiguration _configuration;
     private ContextApi _dbContext;
-    public AuthController(IConfiguration configuration, ILogger<AuthController> logger, ContextApi dbContext)
+    private readonly IUserService _userService;
+    public AuthController(IConfiguration configuration, ContextApi dbContext, IUserService userService)
     {
-        _logger = logger;
         _dbContext = dbContext;
+        _userService = userService;
         _configuration = configuration;
     }
     
@@ -46,7 +48,15 @@ public class AuthController : ControllerBase
         UserProfile userProfile = new() { User = user, };
         _dbContext.UserProfiles.Add(userProfile);
         await _dbContext.SaveChangesAsync();
-        return Ok();
+        return Ok(user);
+    }
+    
+    //  Just a test
+    [HttpGet, Authorize]
+    public ActionResult<string> GetMe()
+    {
+        var userName = _userService.GetMyName();
+        return Ok(userName);
     }
     
     [AllowAnonymous]
@@ -56,31 +66,44 @@ public class AuthController : ControllerBase
         if(!_dbContext.Users.Any(x => x.Username == loginDto.Username))
             return BadRequest("This userApplication doesn't exist");
 
-        UserApplication userApplication = _dbContext.Users.First(x => x.Username == loginDto.Username);
-        var goodPass = Argon2.Verify(userApplication.Password, loginDto.Password);
+        UserApplication user = _dbContext.Users.Include(user => user.Role).First(x => x.Username == loginDto.Username);
+        var goodPass = Argon2.Verify(user.Password, loginDto.Password);
 
         if (!goodPass)
         {
-            userApplication.AccessFailedCount++;
+            user.AccessFailedCount++;
             await _dbContext.SaveChangesAsync();
             return BadRequest("Wrong password");
         }
-            
 
-        var tokenExpiration = DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds();
-        var token = JwtBuilder.Create()
-            .WithAlgorithm(new HMACSHA256Algorithm()) // symmetric
-            .WithSecret(_configuration.GetValue<string>("secret"))
-            .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds())
-            .AddClaim("username", userApplication.Username)
-            .AddClaim("role", userApplication.Role)
-            .Encode();
+        var token = CreateToken(user);
         
-        userApplication.LastLogin = DateTime.Now;
-        userApplication.RefreshToken = token;
-        userApplication.RefreshTokenExpiration = DateTime.Now.AddHours(1);
+        user.LastLogin = DateTime.Now;
 
         await _dbContext.SaveChangesAsync();
-        return Ok(token);
+        return Ok($"bearer {token}");
+    }
+    
+    private string CreateToken(UserApplication user)
+    {
+        List<Claim> claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, user.Role.Key),
+        };
+
+        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
+            _configuration.GetSection("secret").Value));
+
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+        var token = new JwtSecurityToken(
+            claims: claims,
+            expires: DateTime.Now.AddMinutes(15),
+            signingCredentials: creds);
+
+        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+        return jwt;
     }
 }

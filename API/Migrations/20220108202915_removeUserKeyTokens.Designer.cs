@@ -4,6 +4,7 @@ using API.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ContextApi))]
-    partial class ContextApiModelSnapshot : ModelSnapshot
+    [Migration("20220108202915_removeUserKeyTokens")]
+    partial class removeUserKeyTokens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,6 +24,67 @@ namespace API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("API.Catalog.ClaimDemand", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("ContactInfo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("contact_info");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_on")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_on");
+
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("game_id");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("last_modified_by");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("last_modified_on")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_claim_demands");
+
+                    b.HasIndex("GameId")
+                        .HasDatabaseName("ix_claim_demands_game_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_claim_demands_user_id");
+
+                    b.ToTable("claim_demands", "key_exchange");
+                });
 
             modelBuilder.Entity("API.Catalog.Game", b =>
                 {
@@ -107,67 +170,6 @@ namespace API.Migrations
                         .HasName("pk_games");
 
                     b.ToTable("games", "key_exchange");
-                });
-
-            modelBuilder.Entity("API.Catalog.GameDemand", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("ContactInfo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("contact_info");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created_on")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("deleted_on");
-
-                    b.Property<Guid>("GameId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("game_id");
-
-                    b.Property<Guid?>("LastModifiedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("last_modified_by");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("last_modified_on")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_game_demands");
-
-                    b.HasIndex("GameId")
-                        .HasDatabaseName("ix_game_demands_game_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_game_demands_user_id");
-
-                    b.ToTable("game_demands", "key_exchange");
                 });
 
             modelBuilder.Entity("API.Identity.Role", b =>
@@ -414,19 +416,19 @@ namespace API.Migrations
                     b.ToTable("user_profiles", "key_exchange");
                 });
 
-            modelBuilder.Entity("API.Catalog.GameDemand", b =>
+            modelBuilder.Entity("API.Catalog.ClaimDemand", b =>
                 {
                     b.HasOne("API.Catalog.Game", "Game")
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_game_demands_games_game_id");
+                        .HasConstraintName("fk_claim_demands_games_game_id");
 
                     b.HasOne("API.Identity.UserApplication", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .HasConstraintName("fk_game_demands_users_user_id");
+                        .HasConstraintName("fk_claim_demands_users_user_id");
 
                     b.Navigation("Game");
 

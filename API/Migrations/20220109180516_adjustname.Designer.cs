@@ -4,6 +4,7 @@ using API.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ContextApi))]
-    partial class ContextApiModelSnapshot : ModelSnapshot
+    [Migration("20220109180516_adjustname")]
+    partial class adjustname
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,15 +161,15 @@ namespace API.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_game_demands");
+                        .HasName("pk_claim_demands");
 
                     b.HasIndex("GameId")
-                        .HasDatabaseName("ix_game_demands_game_id");
+                        .HasDatabaseName("ix_claim_demands_game_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_game_demands_user_id");
+                        .HasDatabaseName("ix_claim_demands_user_id");
 
-                    b.ToTable("game_demands", "key_exchange");
+                    b.ToTable("claim_demands", "key_exchange");
                 });
 
             modelBuilder.Entity("API.Identity.Role", b =>
@@ -421,12 +423,12 @@ namespace API.Migrations
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_game_demands_games_game_id");
+                        .HasConstraintName("fk_claim_demands_games_game_id");
 
                     b.HasOne("API.Identity.UserApplication", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .HasConstraintName("fk_game_demands_users_user_id");
+                        .HasConstraintName("fk_claim_demands_users_user_id");
 
                     b.Navigation("Game");
 

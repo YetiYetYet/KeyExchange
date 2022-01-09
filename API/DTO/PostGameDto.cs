@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using API.Catalog;
 
 namespace API.DTO;
 

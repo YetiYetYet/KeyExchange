@@ -37,11 +37,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="BLL" />
-      <Folder Include="Catalog" />
-      <Folder Include="Common" />
       <Folder Include="Migrations" />
-      <Folder Include="Validator" />
     </ItemGroup>
 
 </Project>

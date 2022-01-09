@@ -16,7 +16,7 @@ public static class AutoMapperUtils
     {
         MapperConfiguration config = new(cfg => cfg.CreateMap<TS, TD>());
         Mapper mapper = new(config);
-        var result = mapper.Map<List<TS>, List<TD>>(source);
+        var result = new List<TD>(mapper.Map<List<TD>>(source));
         return result;
     }
 }
