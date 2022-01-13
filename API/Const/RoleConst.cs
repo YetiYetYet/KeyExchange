@@ -1,4 +1,4 @@
-﻿namespace API.Identity;
+﻿namespace API.Const;
 
 public class RoleConst
 {

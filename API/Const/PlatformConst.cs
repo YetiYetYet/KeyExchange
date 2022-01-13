@@ -1,4 +1,4 @@
-﻿namespace API.Catalog;
+﻿namespace API.Const;
 
 public class GamePlatformConst
 {

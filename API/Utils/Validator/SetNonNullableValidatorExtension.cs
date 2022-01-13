@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Validators;
 
-namespace API.Validation;
+namespace API.Utils.Validator;
 
 // SetValidator doesn't work when dealing with a nullable reference type
 // Use this SetNonNullableValidator extension method instead

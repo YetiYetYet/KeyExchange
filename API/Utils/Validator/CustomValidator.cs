@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace API.Validation;
+namespace API.Utils.Validator;
 
 public class CustomValidator<T> : AbstractValidator<T>
 {

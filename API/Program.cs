@@ -1,5 +1,5 @@
 using System.Text;
-using API.DbContext;
+using API.Db;
 using API.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +15,7 @@ builder.Services.AddDbContext<ContextApi>(options => options
             .UseSnakeCaseNamingConvention());
 // Tuto
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IGoogleSearchService, GoogleSearchService>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSwaggerGen(options => {

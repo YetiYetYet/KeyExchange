@@ -1,8 +1,8 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using API.DbContext;
+using API.Db;
 using API.DTO;
-using API.Identity;
+using API.Models;
 using API.Service;
 using API.Utils;
 using Isopoh.Cryptography.Argon2;
@@ -32,7 +32,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> RegisterAsync(RegisterDto registerDto)
     {
         //Check if user exists
-        if(_dbContext.Users.Any(x => x.Username == registerDto.Username))
+        if(_dbContext.ApplicationUsers.Any(x => x.Username == registerDto.Username))
             return BadRequest("This username already exists");
         
         // Hash Password
@@ -42,11 +42,10 @@ public class AuthController : ControllerBase
         Role userRole = _dbContext.Roles.Single(x => x.Key == "User");
         
         // Create User and UserProfile
-        UserApplication? user = AutoMapperUtils.BasicAutoMapper<RegisterDto, UserApplication>(registerDto);
+        ApplicationUser? user = AutoMapperUtils.BasicAutoMapper<RegisterDto, ApplicationUser>(registerDto);
         user.Role = userRole;
-        _dbContext.Users.Add(user);
-        UserProfile userProfile = new() { User = user, };
-        _dbContext.UserProfiles.Add(userProfile);
+        user.UserProfile = new UserProfile();
+        _dbContext.ApplicationUsers.Add(user);
         await _dbContext.SaveChangesAsync();
         return Ok(user);
     }
@@ -63,10 +62,10 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<string>> LoginAsync(LoginDto loginDto)
     {
-        if(!_dbContext.Users.Any(x => x.Username == loginDto.Username))
+        if(!_dbContext.ApplicationUsers.Any(x => x.Username == loginDto.Username))
             return BadRequest("This userApplication doesn't exist");
 
-        UserApplication user = _dbContext.Users.Include(user => user.Role).First(x => x.Username == loginDto.Username);
+        ApplicationUser user = _dbContext.ApplicationUsers.Include(user => user.Role).First(x => x.Username == loginDto.Username);
         var goodPass = Argon2.Verify(user.Password, loginDto.Password);
 
         if (!goodPass)
@@ -84,7 +83,7 @@ public class AuthController : ControllerBase
         return Ok($"bearer {token}");
     }
     
-    private string CreateToken(UserApplication user)
+    private string CreateToken(ApplicationUser user)
     {
         List<Claim> claims = new List<Claim>
         {
@@ -99,7 +98,7 @@ public class AuthController : ControllerBase
 
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.Now.AddMinutes(15),
+            expires: DateTime.Now.AddMinutes(60),
             signingCredentials: creds);
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
