@@ -1,6 +1,6 @@
 ﻿namespace API.DTO;
 
-public class GameInfoFromPlatformDto
+public class SteamInfoDto
 {
     public string? Title { get; set; }
     public string? Link { get; set; }
