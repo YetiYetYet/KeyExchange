@@ -1,4 +1,6 @@
 ﻿using API.Db.Entity.Entity.Interface;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace API.Models;
 
@@ -14,6 +16,16 @@ public class Role : IBaseEntity, ISoftDelete
     public Guid? DeletedBy { get; set; }
     public Guid? CreatedBy { get; set; }
     public DateTime? CreatedOn { get; set; }
+    public bool SoftDeleted { get; set; } = false;
     public Guid? LastModifiedBy { get; set; }
     public DateTime? LastModifiedOn { get; set; }
+}
+
+public class RoleGameEntityConfiguration : Db.Entity.BaseEntityConfiguration<Role>
+{
+    public override void Configure(EntityTypeBuilder<Role> builder)
+    {
+        base.Configure(builder);
+        builder.Property(p => p.IsActive).HasDefaultValueSql("1");
+    }
 }

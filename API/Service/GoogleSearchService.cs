@@ -16,7 +16,7 @@ public class GoogleSearchService : IGoogleSearchService
         _configuration = configuration;
     }
 
-    public async Task<GameInfoFromPlatformDto> GetSteamInfo(string gameName)
+    public async Task<SteamInfoDto> GetSteamInfo(string gameName)
     {
         var query = GetDefaultQueryOptions(gameName);
         JsonNode? json = await SearchAsync($"{query}+steam");
@@ -25,7 +25,7 @@ public class GoogleSearchService : IGoogleSearchService
         {
             //JsonNode? json = JsonNode.Parse(File.ReadAllText("Mock/GoogleSearchApi.json"));
             
-            GameInfoFromPlatformDto gameInfoFromPlatformDto = new()
+            SteamInfoDto gameDto = new()
             {
                 Title = json["items"][0]["pagemap"]["metatags"][0]["og:title"].ToString(),
                 Link = json["items"][0]["link"].ToString(),
@@ -34,15 +34,14 @@ public class GoogleSearchService : IGoogleSearchService
                 Reviews = json["items"][0]["pagemap"]["aggregaterating"][0]["description"].ToString(),
                 TumbnailUrl = json["items"][0]["pagemap"]["product"][0]["image"].ToString()
             };
-            return gameInfoFromPlatformDto;
+            return gameDto;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return new GameInfoFromPlatformDto()
+            return new SteamInfoDto()
             {
-                Title = gameName,
-                Description = "No Steam Page Found."
+                Link = "No Link found",
             };
         }
         

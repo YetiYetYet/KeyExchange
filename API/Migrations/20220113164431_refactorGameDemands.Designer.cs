@@ -4,6 +4,7 @@ using API.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ContextApi))]
-    partial class ContextApiModelSnapshot : ModelSnapshot
+    [Migration("20220113164431_refactorGameDemands")]
+    partial class refactorGameDemands
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,14 +161,11 @@ namespace API.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnName("id");
 
                     b.Property<bool>("Approuved")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
-                        .HasColumnName("approuved")
-                        .HasDefaultValueSql("0");
+                        .HasColumnName("approuved");
 
                     b.Property<string>("ContactInfo")
                         .HasColumnType("nvarchar(max)")
@@ -181,10 +180,8 @@ namespace API.Migrations
                         .HasColumnName("created_by");
 
                     b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasColumnName("created_on")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnName("created_on");
 
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier")
@@ -203,16 +200,12 @@ namespace API.Migrations
                         .HasColumnName("last_modified_by");
 
                     b.Property<DateTime?>("LastModifiedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasColumnName("last_modified_on")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnName("last_modified_on");
 
                     b.Property<bool>("SoftDeleted")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
-                        .HasColumnName("soft_deleted")
-                        .HasDefaultValueSql("0");
+                        .HasColumnName("soft_deleted");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier")

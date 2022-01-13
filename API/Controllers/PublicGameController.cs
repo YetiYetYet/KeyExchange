@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using API.Db;
 using API.DTO;
@@ -24,11 +25,12 @@ namespace API.Controllers
             _context = context;
         }
         
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<GameDto>>> GetGames()
         {
-            var gameList = await _context.Games.Include(game => game.GameInfoFromPlatform).Include(game => game.User).ToListAsync();
-            var gameDtos = AutoMapperUtils.TupleAutoMapper<Game, GameDto>(gameList, new List<(Type, Type)>() { (typeof(ApplicationUser), typeof(UserDto)), (typeof(GameInfoFromPlatform), typeof(GameInfoFromPlatformDto))});
+            var gameList = await _context.Games.Where(game => !game.SoftDeleted).ToListAsync();
+            var gameDtos = AutoMapperUtils.TupleAutoMapper<Game, GameDto>(gameList, new List<(Type, Type)>() { (typeof(User), typeof(UserDto)) });
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(gameDtos));
             return Ok(gameDtos.ToJson(Formatting.Indented));
         }
     }

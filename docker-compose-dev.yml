@@ -1,12 +1,13 @@
 ﻿version: '3.8'
 services:
-  KeyExchangeAPI:
+  key-exchange-api:
     container_name: key-exchange-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000
     build:
       dockerfile: DockerfileDev
+      context: ./
     ports:
       - "8080:80"
       - "5000:5000"
@@ -16,7 +17,7 @@ services:
     depends_on:
       - database
 
-  Database:
+  database:
     container_name: database-dev
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:

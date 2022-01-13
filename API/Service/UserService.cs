@@ -20,6 +20,16 @@ public class UserService : IUserService
         }
         return result;
     }
+    
+    public string GetMyGuid()
+    {
+        var result = string.Empty;
+        if (_httpContextAccessor.HttpContext != null)
+        {
+            result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.SerialNumber);
+        }
+        return result;
+    }
 
     public string GetMyRole()
     {

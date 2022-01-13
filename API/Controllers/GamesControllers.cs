@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Claims;
 using API.Db;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +7,9 @@ using API.DTO;
 using API.Models;
 using API.Service;
 using API.Utils;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 
 namespace API.Controllers;
@@ -18,11 +21,13 @@ public class GamesControllers : ControllerBase
 {
     private readonly ContextApi _context;
     private IGoogleSearchService _googleSearchService;
+    private IUserService _userService;
 
-    public GamesControllers(ContextApi context, IGoogleSearchService googleSearchService)
+    public GamesControllers(ContextApi context, IGoogleSearchService googleSearchService, IUserService userService)
     {
         _context = context;
         _googleSearchService = googleSearchService;
+        _userService = userService;
     }
 
     // GET: api/GamesControllers
@@ -102,23 +107,30 @@ public class GamesControllers : ControllerBase
 
         return NoContent();
     }
-    
-    // GET: api/GamesControllers
+
+
+    //GET: api/GamesControllers
     [HttpGet("get-a-link"), Authorize(Roles = "root")]
     public async Task<ActionResult<IEnumerable<Game>>> GetALink()
     {
-        var steamGameList = await _context.Games.Where(game => game.Platforme == "Steam" && game.GameInfoFromPlatform == null).Take(10).ToListAsync();
-        foreach (var game in steamGameList)
+        var steamGameList = await _context.Games.Where(game => game.Platforme == "Steam" && game.Link == null).Take(10).ToListAsync();
+        foreach (Game game in steamGameList)
         {
             Console.WriteLine($"{game.Name}");
-            var steamGameInfoDto = await _googleSearchService.GetSteamInfo(game.Name);
-            GameInfoFromPlatform gameInfoFromPlatform = AutoMapperUtils.BasicAutoMapper<GameInfoFromPlatformDto, GameInfoFromPlatform>(steamGameInfoDto);
-            var entityGameInfo = _context.GameInfoFromPlatforms.Add(gameInfoFromPlatform);
-            var entity = _context.GameInfoFromPlatforms.Add(gameInfoFromPlatform).Entity;
-            game.GameInfoFromPlatform = entity;
+            SteamInfoDto steamGameInfoDto = await _googleSearchService.GetSteamInfo(game.Name);
+            game.Title = steamGameInfoDto.Title;
+            game.Link = steamGameInfoDto.Link;
+            game.Description = steamGameInfoDto.Description;
+            game.Price = steamGameInfoDto.Price;
+            game.Reviews = steamGameInfoDto.Reviews;
+            game.TumbnailUrl = steamGameInfoDto.TumbnailUrl;
+
+            game.GeneratedInfo = true;
+            game.LastModifiedOn = DateTime.Now;
+            
+            game.LastModifiedBy = Guid.Empty;
             await _context.SaveChangesAsync();
         }
-        
         return await _context.Games.ToListAsync();
     }
 

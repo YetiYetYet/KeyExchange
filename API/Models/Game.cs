@@ -1,20 +1,26 @@
 ﻿using API.Db.Entity.Entity.Interface;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace API.Models;
 
 public class Game : IBaseEntity, ISoftDelete
 {
     public Guid Id { get; set; }
-    public ApplicationUser? User { get; set; }
     public Guid? CreatedBy { get; set; }
     public DateTime? CreatedOn { get; set; }
     public Guid? LastModifiedBy { get; set; }
     public DateTime? LastModifiedOn { get; set; }
-    public bool IsAvailable { get; set; }
+    public bool IsAvailable { get; set; } = true;
     public string? Name { get; set; }
-    public string? Link { get; set; }
     public string? Platforme { get; set; }
-    public GameInfoFromPlatform? GameInfoFromPlatform { get; set; }
+    public bool? GeneratedInfo { get; set; } = false;
+    public string? Title { get; set; }
+    public string? Link { get; set; }
+    public string? Description { get; set; }
+    public string? Price { get; set; }
+    public string? Reviews { get; set; }
+    public string? TumbnailUrl { get; set; }
     public string? Key { get; set; }
     public string? ObtenaidBy { get; set; }
     public string? PublicComment { get; set; }
@@ -24,6 +30,17 @@ public class Game : IBaseEntity, ISoftDelete
     public DateTime ReceivedDate { get; set; }
     public DateTime? GivenDate { get; set; }
     public string? GivenTo { get; set; }
+    public bool SoftDeleted { get; set; } = false;
     public DateTime? DeletedOn { get; set; }
     public Guid? DeletedBy { get; set; }
+}
+
+public class GameEntityConfiguration : Db.Entity.BaseEntityConfiguration<Game>
+{
+    public override void Configure(EntityTypeBuilder<Game> builder)
+    {
+        base.Configure(builder);
+        builder.Property(p => p.IsAvailable).HasDefaultValueSql("1");
+        builder.Property(p => p.GeneratedInfo).HasDefaultValueSql("0");
+    }
 }

@@ -12,120 +12,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ContextApi))]
-    [Migration("20220111205630_init")]
+    [Migration("20220113162440_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("key_exchange")
+                .HasDefaultSchema("keys_exchange")
                 .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("API.Models.ApplicationUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int")
-                        .HasColumnName("access_failed_count");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created_on")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("deleted_on");
-
-                    b.Property<string>("Discord")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("discord");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("email");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("first_name");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_active");
-
-                    b.Property<DateTime?>("LastLogin")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("last_login");
-
-                    b.Property<Guid?>("LastModifiedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("last_modified_by");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("last_modified_on")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("last_name");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("password");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("phone_number");
-
-                    b.Property<Guid?>("RoleId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("role_id");
-
-                    b.Property<Guid?>("UserProfileId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("user_profile_id");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("username");
-
-                    b.HasKey("Id")
-                        .HasName("pk_application_users");
-
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_application_users_role_id");
-
-                    b.HasIndex("UserProfileId")
-                        .HasDatabaseName("ix_application_users_user_profile_id");
-
-                    b.HasIndex("Username")
-                        .IsUnique()
-                        .HasDatabaseName("ix_application_users_username");
-
-                    b.ToTable("application_users", "key_exchange");
-                });
 
             modelBuilder.Entity("API.Models.Game", b =>
                 {
@@ -157,9 +55,15 @@ namespace API.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("deleted_on");
 
-                    b.Property<Guid?>("GameInfoFromPlatformId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("game_info_from_platform_id");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description");
+
+                    b.Property<bool?>("GeneratedInfo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasColumnName("generated_info")
+                        .HasDefaultValueSql("0");
 
                     b.Property<DateTime?>("GivenDate")
                         .HasColumnType("datetime2")
@@ -170,8 +74,10 @@ namespace API.Migrations
                         .HasColumnName("given_to");
 
                     b.Property<bool>("IsAvailable")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
-                        .HasColumnName("is_available");
+                        .HasColumnName("is_available")
+                        .HasDefaultValueSql("1");
 
                     b.Property<string>("Key")
                         .HasColumnType("nvarchar(max)")
@@ -207,6 +113,10 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("platforme");
 
+                    b.Property<string>("Price")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("price");
+
                     b.Property<string>("PublicComment")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("public_comment");
@@ -215,6 +125,24 @@ namespace API.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("received_date");
 
+                    b.Property<string>("Reviews")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("reviews");
+
+                    b.Property<bool>("SoftDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasColumnName("soft_deleted")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("title");
+
+                    b.Property<string>("TumbnailUrl")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("tumbnail_url");
+
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_id");
@@ -222,13 +150,10 @@ namespace API.Migrations
                     b.HasKey("Id")
                         .HasName("pk_games");
 
-                    b.HasIndex("GameInfoFromPlatformId")
-                        .HasDatabaseName("ix_games_game_info_from_platform_id");
-
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_games_user_id");
 
-                    b.ToTable("games", "key_exchange");
+                    b.ToTable("games", "keys_exchange");
                 });
 
             modelBuilder.Entity("API.Models.GameDemand", b =>
@@ -236,23 +161,27 @@ namespace API.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnName("id");
+
+                    b.Property<bool>("Approuved")
+                        .HasColumnType("bit")
+                        .HasColumnName("approuved");
 
                     b.Property<string>("ContactInfo")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("contact_info");
+
+                    b.Property<string>("ContactName")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("contact_name");
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("created_by");
 
                     b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasColumnName("created_on")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnName("created_on");
 
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier")
@@ -262,7 +191,7 @@ namespace API.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("deleted_on");
 
-                    b.Property<Guid>("GameId")
+                    b.Property<Guid?>("GameId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("game_id");
 
@@ -271,10 +200,12 @@ namespace API.Migrations
                         .HasColumnName("last_modified_by");
 
                     b.Property<DateTime?>("LastModifiedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasColumnName("last_modified_on")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnName("last_modified_on");
+
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("soft_deleted");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier")
@@ -289,73 +220,7 @@ namespace API.Migrations
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_game_demands_user_id");
 
-                    b.ToTable("game_demands", "key_exchange");
-                });
-
-            modelBuilder.Entity("API.Models.GameInfoFromPlatform", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created_on")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("deleted_on");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("description");
-
-                    b.Property<Guid?>("LastModifiedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("last_modified_by");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("last_modified_on")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<string>("Link")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("link");
-
-                    b.Property<string>("Price")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("price");
-
-                    b.Property<string>("Reviews")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("reviews");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("title");
-
-                    b.Property<string>("TumbnailUrl")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("tumbnail_url");
-
-                    b.HasKey("Id")
-                        .HasName("pk_game_info_from_platforms");
-
-                    b.ToTable("game_info_from_platforms", "key_exchange");
+                    b.ToTable("game_demands", "keys_exchange");
                 });
 
             modelBuilder.Entity("API.Models.Role", b =>
@@ -412,6 +277,12 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("name");
 
+                    b.Property<bool>("SoftDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasColumnName("soft_deleted")
+                        .HasDefaultValueSql("0");
+
                     b.Property<DateTime?>("ValidUpto")
                         .HasColumnType("datetime2")
                         .HasColumnName("valid_upto");
@@ -419,10 +290,10 @@ namespace API.Migrations
                     b.HasKey("Id")
                         .HasName("pk_roles");
 
-                    b.ToTable("roles", "key_exchange");
+                    b.ToTable("roles", "keys_exchange");
                 });
 
-            modelBuilder.Entity("API.Models.RoleClaim", b =>
+            modelBuilder.Entity("API.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -430,15 +301,9 @@ namespace API.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<string>("ClaimType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("claim_type");
-
-                    b.Property<string>("ClaimValue")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("claim_value");
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int")
+                        .HasColumnName("access_failed_count");
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier")
@@ -462,63 +327,30 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
-                    b.Property<Guid?>("LastModifiedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("last_modified_by");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("last_modified_on")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<Guid?>("RoleId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("role_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_role_claims");
-
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_role_claims_role_id");
-
-                    b.ToTable("role_claims", "key_exchange");
-                });
-
-            modelBuilder.Entity("API.Models.UserProfile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created_on")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("deleted_on");
-
-                    b.Property<string>("Description")
+                    b.Property<string>("Discord")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("description");
+                        .HasColumnName("discord");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("first_name");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_active");
 
                     b.Property<bool>("IsPublic")
                         .HasColumnType("bit")
                         .HasColumnName("is_public");
 
+                    b.Property<DateTime?>("LastLogin")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("last_login");
+
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("last_modified_by");
@@ -529,13 +361,30 @@ namespace API.Migrations
                         .HasColumnName("last_modified_on")
                         .HasDefaultValueSql("GETDATE()");
 
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("last_name");
+
                     b.Property<string>("OtherLink")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("other_link");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("password");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("phone_number");
+
                     b.Property<string>("PictureUri")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("picture_uri");
+
+                    b.Property<Guid?>("RoleId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("role_id");
 
                     b.Property<bool>("ShowDiscord")
                         .HasColumnType("bit")
@@ -557,71 +406,57 @@ namespace API.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("show_phone_number");
 
-                    b.HasKey("Id")
-                        .HasName("pk_user_profiles");
+                    b.Property<bool>("SoftDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasColumnName("soft_deleted")
+                        .HasDefaultValueSql("0");
 
-                    b.ToTable("user_profiles", "key_exchange");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("username");
+
+                    b.HasKey("Id")
+                        .HasName("pk_application_users");
+
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("ix_application_users_role_id");
+
+                    b.HasIndex("Username")
+                        .IsUnique()
+                        .HasDatabaseName("ix_application_users_username");
+
+                    b.ToTable("application_users", "keys_exchange");
                 });
 
-            modelBuilder.Entity("API.Models.ApplicationUser", b =>
+            modelBuilder.Entity("API.Models.Game", b =>
+                {
+                    b.HasOne("API.Models.User", null)
+                        .WithMany("Games")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("fk_games_application_users_user_id");
+                });
+
+            modelBuilder.Entity("API.Models.GameDemand", b =>
+                {
+                    b.HasOne("API.Models.Game", null)
+                        .WithMany("GameDemands")
+                        .HasForeignKey("GameId")
+                        .HasConstraintName("fk_game_demands_games_game_id");
+
+                    b.HasOne("API.Models.User", null)
+                        .WithMany("GameDemands")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("fk_game_demands_application_users_user_id");
+                });
+
+            modelBuilder.Entity("API.Models.User", b =>
                 {
                     b.HasOne("API.Models.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .HasConstraintName("fk_application_users_roles_role_id");
-
-                    b.HasOne("API.Models.UserProfile", "UserProfile")
-                        .WithMany()
-                        .HasForeignKey("UserProfileId")
-                        .HasConstraintName("fk_application_users_user_profiles_user_profile_id");
-
-                    b.Navigation("Role");
-
-                    b.Navigation("UserProfile");
-                });
-
-            modelBuilder.Entity("API.Models.Game", b =>
-                {
-                    b.HasOne("API.Models.GameInfoFromPlatform", "GameInfoFromPlatform")
-                        .WithMany()
-                        .HasForeignKey("GameInfoFromPlatformId")
-                        .HasConstraintName("fk_games_game_info_from_platforms_game_info_from_platform_id");
-
-                    b.HasOne("API.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("fk_games_application_users_user_id");
-
-                    b.Navigation("GameInfoFromPlatform");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("API.Models.GameDemand", b =>
-                {
-                    b.HasOne("API.Models.Game", "Game")
-                        .WithMany("GameDemands")
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_game_demands_games_game_id");
-
-                    b.HasOne("API.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("fk_game_demands_application_users_user_id");
-
-                    b.Navigation("Game");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("API.Models.RoleClaim", b =>
-                {
-                    b.HasOne("API.Models.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .HasConstraintName("fk_role_claims_roles_role_id");
 
                     b.Navigation("Role");
                 });
@@ -629,6 +464,13 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.Game", b =>
                 {
                     b.Navigation("GameDemands");
+                });
+
+            modelBuilder.Entity("API.Models.User", b =>
+                {
+                    b.Navigation("GameDemands");
+
+                    b.Navigation("Games");
                 });
 #pragma warning restore 612, 618
         }

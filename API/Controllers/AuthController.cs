@@ -1,15 +1,14 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using API.Db;
+﻿using API.Db;
 using API.DTO;
 using API.Models;
 using API.Service;
 using API.Utils;
+using API.Utils.Validator;
+using FluentValidation.Results;
 using Isopoh.Cryptography.Argon2;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers;
 
@@ -18,12 +17,11 @@ namespace API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IConfiguration _configuration;
-    private ContextApi _dbContext;
-    private readonly IUserService _userService;
-    public AuthController(IConfiguration configuration, ContextApi dbContext, IUserService userService)
+    private readonly ContextApi _dbContext;
+    
+    public AuthController(IConfiguration configuration, ContextApi dbContext)
     {
         _dbContext = dbContext;
-        _userService = userService;
         _configuration = configuration;
     }
     
@@ -35,6 +33,14 @@ public class AuthController : ControllerBase
         if(_dbContext.ApplicationUsers.Any(x => x.Username == registerDto.Username))
             return BadRequest("This username already exists");
         
+        RegisterUserRequestValidator validator = new();
+        ValidationResult results = await validator.ValidateAsync(registerDto);
+
+        if (!results.IsValid)
+        {
+            return BadRequest(results.ToString("~"));
+        }
+        
         // Hash Password
         registerDto.Password = Argon2.Hash(registerDto.Password);
         
@@ -42,20 +48,23 @@ public class AuthController : ControllerBase
         Role userRole = _dbContext.Roles.Single(x => x.Key == "User");
         
         // Create User and UserProfile
-        ApplicationUser? user = AutoMapperUtils.BasicAutoMapper<RegisterDto, ApplicationUser>(registerDto);
+        User? user = AutoMapperUtils.BasicAutoMapper<RegisterDto, User>(registerDto);
         user.Role = userRole;
-        user.UserProfile = new UserProfile();
+        user.CreatedBy = Guid.Empty;
+        user.LastModifiedBy = Guid.Empty;
         _dbContext.ApplicationUsers.Add(user);
         await _dbContext.SaveChangesAsync();
-        return Ok(user);
+        //UserDto userDto = AutoMapperUtils.BasicAutoMapper<User, UserDto>(user);
+        return Ok();
     }
     
+    
     //  Just a test
-    [HttpGet, Authorize]
-    public ActionResult<string> GetMe()
+    [HttpGet("test"), Authorize]
+    public ActionResult<string> GetInfo()
     {
-        var userName = _userService.GetMyName();
-        return Ok(userName);
+        Console.WriteLine(HttpContext.User.Identity.Name);
+        return Ok();
     }
     
     [AllowAnonymous]
@@ -65,44 +74,25 @@ public class AuthController : ControllerBase
         if(!_dbContext.ApplicationUsers.Any(x => x.Username == loginDto.Username))
             return BadRequest("This userApplication doesn't exist");
 
-        ApplicationUser user = _dbContext.ApplicationUsers.Include(user => user.Role).First(x => x.Username == loginDto.Username);
-        var goodPass = Argon2.Verify(user.Password, loginDto.Password);
+        User user = _dbContext.ApplicationUsers.Include(user => user.Role).First(x => x.Username == loginDto.Username);
+        var isGoodPass = Argon2.Verify(user.Password, loginDto.Password);
 
-        if (!goodPass)
+        if (!isGoodPass)
         {
             user.AccessFailedCount++;
+            user.LastModifiedBy = Guid.Empty;
+            user.LastModifiedOn = DateTime.Now;
             await _dbContext.SaveChangesAsync();
             return BadRequest("Wrong password");
         }
 
-        var token = CreateToken(user);
+        var token = JwtUtils.CreateToken(user, _configuration.GetSection("secret").Value);
         
         user.LastLogin = DateTime.Now;
-
         await _dbContext.SaveChangesAsync();
+        
         return Ok($"bearer {token}");
     }
     
-    private string CreateToken(ApplicationUser user)
-    {
-        List<Claim> claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role.Key),
-        };
-
-        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
-            _configuration.GetSection("secret").Value));
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-        var token = new JwtSecurityToken(
-            claims: claims,
-            expires: DateTime.Now.AddMinutes(60),
-            signingCredentials: creds);
-
-        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-        return jwt;
-    }
+    
 }

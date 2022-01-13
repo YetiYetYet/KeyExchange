@@ -12,9 +12,7 @@ public class PostGameDto
     public string? ObtenaidBy { get; set; }
     public string? PublicComment { get; set; }
     public string? AdminComment { get; set; }
-    [DataType(DataType.Date)]
     public DateTime ReceivedDate { get; set; }
-    [DataType(DataType.Date)]
     public DateTime? GivenDate { get; set; } = null;
     public string? GivenTo { get; set; } = null;
 }
