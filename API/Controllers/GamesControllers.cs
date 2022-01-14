@@ -1,16 +1,10 @@
-using System.Net;
-using System.Security.Claims;
 using API.Db;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.DTO;
 using API.Models;
 using API.Service;
-using API.Utils;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Newtonsoft.Json;
-using NuGet.Protocol;
 
 namespace API.Controllers;
 
@@ -113,7 +107,7 @@ public class GamesControllers : ControllerBase
     [HttpGet("get-a-link"), Authorize(Roles = "root")]
     public async Task<ActionResult<IEnumerable<Game>>> GetALink()
     {
-        var steamGameList = await _context.Games.Where(game => game.Platforme == "Steam" && game.Link == null).Take(10).ToListAsync();
+        var steamGameList = await _context.Games.Where(game => game.Platforme == "Steam" && game.Link == null).Take(2).ToListAsync();
         foreach (Game game in steamGameList)
         {
             Console.WriteLine($"{game.Name}");

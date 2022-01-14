@@ -1,17 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mime;
-using System.Threading.Tasks;
 using API.Db;
 using API.DTO;
 using API.Models;
 using API.Utils;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using NuGet.Protocol;
 
 namespace API.Controllers
 {
@@ -26,12 +18,11 @@ namespace API.Controllers
         }
         
         [HttpGet("all")]
-        public async Task<ActionResult<IEnumerable<GameDto>>> GetGames()
+        public async Task<ActionResult<IEnumerable<GameDto>>> GetAllGames()
         {
-            var gameList = await _context.Games.Where(game => !game.SoftDeleted).ToListAsync();
-            var gameDtos = AutoMapperUtils.TupleAutoMapper<Game, GameDto>(gameList, new List<(Type, Type)>() { (typeof(User), typeof(UserDto)) });
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(gameDtos));
-            return Ok(gameDtos.ToJson(Formatting.Indented));
+            var gameList = await _context.Games.Where(game => !game.SoftDeleted).Include(game => game.User).ToListAsync();
+            var gameDtos = AutoMapperUtils.TupleAutoMapper<Game, GameDto>(gameList, new List<(Type, Type)>() { (typeof(User), typeof(UserGameDto)) });
+            return Ok(gameDtos);
         }
     }
 }

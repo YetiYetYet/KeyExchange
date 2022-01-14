@@ -1,4 +1,5 @@
-﻿using API.Db.Entity.Entity.Interface;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using API.Db.Entity.Entity.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,6 +9,9 @@ public class Game : IBaseEntity, ISoftDelete
 {
     public Guid Id { get; set; }
     public Guid? CreatedBy { get; set; }
+    [ForeignKey("user_id")]
+    public Guid? UserId { get; set; } // Foreign key
+    public User? User { get; set; } // reference navigation
     public DateTime? CreatedOn { get; set; }
     public Guid? LastModifiedBy { get; set; }
     public DateTime? LastModifiedOn { get; set; }
@@ -42,5 +46,6 @@ public class GameEntityConfiguration : Db.Entity.BaseEntityConfiguration<Game>
         base.Configure(builder);
         builder.Property(p => p.IsAvailable).HasDefaultValueSql("1");
         builder.Property(p => p.GeneratedInfo).HasDefaultValueSql("0");
+        builder.HasOne(game => game.User).WithMany(user => user.Games).HasForeignKey(game => game.UserId);
     }
 }

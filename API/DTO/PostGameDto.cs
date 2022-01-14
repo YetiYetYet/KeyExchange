@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace API.DTO;
+﻿namespace API.DTO;
 
 public class PostGameDto
 {

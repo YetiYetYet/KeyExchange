@@ -3,12 +3,13 @@ using System.Text.Json.Serialization;
 
 namespace API.Utils;
 
-public static class PrintJsonUtils
+public static class JsonUtils
 {
     public static string ConstructJson<T>(T data, bool indented = true, bool ignoreNull = false, bool snake_case = false)
     {
         var jsonOption = new JsonSerializerOptions();
         jsonOption.WriteIndented = indented;
+        jsonOption.ReferenceHandler = ReferenceHandler.Preserve;
         jsonOption.DefaultIgnoreCondition =
             ignoreNull ? JsonIgnoreCondition.WhenWritingNull : JsonIgnoreCondition.Never;
         jsonOption.PropertyNamingPolicy = snake_case ? JsonNamingPolicy.CamelCase : SnakeCaseNamingPolicy.Instance;

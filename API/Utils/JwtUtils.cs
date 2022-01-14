@@ -7,7 +7,7 @@ namespace API.Utils;
 
 public static class JwtUtils
 {
-    public static string CreateToken(User user, string secret)
+    public static string CreateToken(User user, string secret, int expMin = 60)
     {
         var claims = new List<Claim>
         {
@@ -22,7 +22,7 @@ public static class JwtUtils
 
         JwtSecurityToken token = new(
             claims: claims,
-            expires: DateTime.Now.AddMinutes(60),
+            expires: DateTime.Now.AddMinutes(expMin),
             signingCredentials: creds);
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);

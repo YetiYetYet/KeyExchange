@@ -1,10 +1,9 @@
-﻿using API.Models;
-
-namespace API.DTO;
+﻿namespace API.DTO;
 
 public class GameDto
 {
-    public User User { get; set; }
+    public Guid UserId { get; set; }
+    public UserGameDto User { get; set; }
     public bool IsAvailable { get; set; }
     public string Name { get; set; }
     public string Platforme { get; set; }

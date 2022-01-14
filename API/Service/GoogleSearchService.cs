@@ -44,8 +44,6 @@ public class GoogleSearchService : IGoogleSearchService
                 Link = "No Link found",
             };
         }
-        
-        
     }
 
     public string GetDefaultQueryOptions(string gameName)

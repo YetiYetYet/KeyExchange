@@ -389,7 +389,7 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("picture_uri");
 
-                    b.Property<Guid?>("RoleId")
+                    b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("role_id");
 
@@ -439,10 +439,12 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.Game", b =>
                 {
-                    b.HasOne("API.Models.User", null)
+                    b.HasOne("API.Models.User", "User")
                         .WithMany("Games")
                         .HasForeignKey("UserId")
                         .HasConstraintName("fk_games_application_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("API.Models.GameDemand", b =>
@@ -465,6 +467,8 @@ namespace API.Migrations
                     b.HasOne("API.Models.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_application_users_roles_role_id");
 
                     b.Navigation("Role");

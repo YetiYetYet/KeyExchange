@@ -1,5 +1,4 @@
 ﻿using API.Db.Entity.Entity.Interface;
-using API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

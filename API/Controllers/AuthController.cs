@@ -1,7 +1,6 @@
 ﻿using API.Db;
 using API.DTO;
 using API.Models;
-using API.Service;
 using API.Utils;
 using API.Utils.Validator;
 using FluentValidation.Results;
@@ -86,13 +85,11 @@ public class AuthController : ControllerBase
             return BadRequest("Wrong password");
         }
 
-        var token = JwtUtils.CreateToken(user, _configuration.GetSection("secret").Value);
+        var token = JwtUtils.CreateToken(user, _configuration.GetSection("SecuritySettings:JwtSettings:key").Value, Int32.Parse(_configuration.GetSection("SecuritySettings:JwtSettings:tokenExpirationInMinutes").Value));
         
         user.LastLogin = DateTime.Now;
         await _dbContext.SaveChangesAsync();
         
         return Ok($"bearer {token}");
     }
-    
-    
 }
