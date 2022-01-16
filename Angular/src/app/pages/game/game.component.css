@@ -1,0 +1,87 @@
+.mat-card {
+  max-width: 350px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  /*margin: 0.3em;*/
+}
+
+.public-game {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  gap: 0.5em;
+}
+
+.mat-card-header {
+  align-items: center;
+}
+
+.mat-card-subtitle {
+  margin-bottom: 0.5em;
+}
+
+.profile-picture {
+  background-size: cover;
+}
+
+.profile-picture:hover {
+  background-size: cover;
+  box-shadow: 1px 1px 1px 1px black;
+}
+
+.platform-picture {
+  background-size: cover;
+}
+
+.platform-picture:hover {
+  background-size: cover;
+  box-shadow: 1px 1px 1px 1px black;
+}
+
+.app-header {
+  margin-bottom: 0;
+}
+
+.mat-divider {
+  width: 90%;
+  border: 0.2vm;
+}
+
+.mat-card-action{
+  align-items: center;
+}
+
+.available {
+  padding-left: 1em;
+  margin: auto;
+}
+
+.title-price {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.description {
+  flex-grow: 2;
+  height: max-content;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.platform {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
+  margin-top: 0.5em;
+  margin-bottom: 0.1em;
+  gap: 1em;
+}

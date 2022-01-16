@@ -1,0 +1,37 @@
+<div class="public-game">
+  <mat-card *ngFor="let game of games">
+    <mat-card-header>
+      <mat-card-title>{{game.name}}</mat-card-title>
+      <mat-card-subtitle>Gived by <a routerLink="/user-profile/{{game.user.id}}">{{game.user.username}}</a></mat-card-subtitle>
+      <mat-card-subtitle>Receveid the {{game.receivedDate  | date:'fullDate'}}</mat-card-subtitle>
+      <img mat-card-avatar routerLink="/user-profile/{{game.user.id}}" class="profile-picture" src="{{game.user.pictureUri}}" alt="">
+    </mat-card-header>
+    <mat-divider inset></mat-divider>
+    <img src="{{game.tumbnailUrl}}" alt="" style="width: 100%;">
+    <mat-card-content class="platform">
+      <img *ngIf="game.platforme == 'Steam'" mat-card-avatar routerLink="https://store.steampowered.com/" class="platform-picture" src="{{steamIconUri}}" alt="" style="background-size: cover;">
+      <img *ngIf="game.platforme == 'Blizzard'" mat-card-avatar routerLink="https://eu.shop.battle.net/fr-fr" class="platform-picture" src="{{blizzardIconUri}}" alt="" style="background-size: cover;">
+      Platform : {{game.platforme}}
+    </mat-card-content>
+    <mat-card-content class="title-price">
+      <a href="{{game.link}}">{{game.title}}</a>
+      <p *ngIf="game.price">{{game.price}}€</p>
+    </mat-card-content>
+    <mat-card-content class="description">
+      <p>{{game.description}}</p>
+      <p *ngIf="game.reviews">Reviews : {{game.reviews}}</p>
+      <div *ngIf="game.publicComment" class="user-comment">
+        <p>{{game.publicComment}}</p>
+      </div>
+    </mat-card-content>
+    <mat-divider inset></mat-divider>
+
+    <mat-card-actions *ngIf="game.isAvailable" class="is-available" align="end">
+      <span class="available">This game is available !</span>
+      <span class="example-spacer"></span>
+      <button mat-raised-button>I want this game !</button>
+    </mat-card-actions>
+    <mat-card-subtitle *ngIf="!game.isAvailable">This game is no longer available !</mat-card-subtitle>
+    <mat-card-subtitle *ngIf="!game.isAvailable">It was given the {{(game.givenDate) | date:'fullDate'}} to {{game.givenTo}}</mat-card-subtitle>
+  </mat-card>
+</div>

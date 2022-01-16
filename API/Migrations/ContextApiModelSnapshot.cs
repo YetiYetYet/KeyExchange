@@ -221,9 +221,6 @@ namespace API.Migrations
                     b.HasKey("Id")
                         .HasName("pk_game_demands");
 
-                    b.HasIndex("GameId")
-                        .HasDatabaseName("ix_game_demands_game_id");
-
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_game_demands_user_id");
 
@@ -339,7 +336,8 @@ namespace API.Migrations
                         .HasColumnName("discord");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("email");
 
                     b.Property<string>("FirstName")
@@ -427,6 +425,10 @@ namespace API.Migrations
                     b.HasKey("Id")
                         .HasName("pk_application_users");
 
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("ix_application_users_email");
+
                     b.HasIndex("RoleId")
                         .HasDatabaseName("ix_application_users_role_id");
 
@@ -449,15 +451,17 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.GameDemand", b =>
                 {
-                    b.HasOne("API.Models.Game", null)
+                    b.HasOne("API.Models.Game", "Game")
                         .WithMany("GameDemands")
-                        .HasForeignKey("GameId")
+                        .HasForeignKey("UserId")
                         .HasConstraintName("fk_game_demands_games_game_id");
 
                     b.HasOne("API.Models.User", "User")
                         .WithMany("GameDemands")
                         .HasForeignKey("UserId")
                         .HasConstraintName("fk_game_demands_application_users_user_id");
+
+                    b.Navigation("Game");
 
                     b.Navigation("User");
                 });

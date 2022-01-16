@@ -17,7 +17,7 @@ public class ContextApi : DbContext
     {
         _configuration = configuration;
     }
-    
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder
             .UseSqlServer(_configuration.GetConnectionString("DefaultConnection"))

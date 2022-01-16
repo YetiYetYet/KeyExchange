@@ -10,7 +10,7 @@ public class User : IBaseEntity, ISoftDelete
     public string Password { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
-    public string? Email { get; set; }
+    public string Email { get; set; }
     public string? Discord { get; set; }
     public string? PhoneNumber { get; set; }
     public Role Role { get; set; }
@@ -44,6 +44,7 @@ public class UserEntityConfiguration : Db.Entity.BaseEntityConfiguration<User>
     {
         base.Configure(builder);
         builder.HasIndex(p => p.Username).IsUnique();
+        builder.HasIndex(p => p.Email).IsUnique();
         builder.Navigation(r => r.Role).AutoInclude();
     }
 }

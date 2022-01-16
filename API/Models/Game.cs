@@ -46,6 +46,8 @@ public class GameEntityConfiguration : Db.Entity.BaseEntityConfiguration<Game>
         base.Configure(builder);
         builder.Property(p => p.IsAvailable).HasDefaultValueSql("1");
         builder.Property(p => p.GeneratedInfo).HasDefaultValueSql("0");
-        builder.HasOne(game => game.User).WithMany(user => user.Games).HasForeignKey(game => game.UserId);
+        builder.HasOne(game => game.User)
+            .WithMany(user => user.Games)
+            .HasForeignKey(game => game.UserId);
     }
 }

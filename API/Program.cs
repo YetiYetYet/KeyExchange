@@ -1,10 +1,9 @@
-using System.Text;
-using System.Text.Json.Serialization;
 using API.Db;
-using API.Service;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using API.Service.GoogleApi;
+using API.Service.Mailing;
+using API.Service.User;
+using API.Utils.Jwt;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -17,7 +16,19 @@ builder.Services.AddDbContext<ContextApi>(options => options
 // Tuto
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IGoogleSearchService, GoogleSearchService>();
+builder.Services.AddScoped<IMailService, SmtpMailService>();
 builder.Services.AddHttpContextAccessor();
+
+//Cors
+builder.Services.AddCors(option =>
+{
+    option.AddDefaultPolicy(builder =>
+    {
+        builder.WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddSwaggerGen(options => {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -29,22 +40,9 @@ builder.Services.AddSwaggerGen(options => {
     });
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = false,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                .GetBytes(builder.Configuration.GetSection("Secret").Value)),
-            ValidateIssuer = false,
-            ValidateAudience = false,
-        };
-    });
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddControllers();
 
-builder.Services.AddControllers().AddJsonOptions(x =>
-    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-builder.Services.AddLogging();
 
 //Swagger Services + Authentication Services
 builder.Services.AddEndpointsApiExplorer();
@@ -64,6 +62,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 

@@ -1,0 +1,14 @@
+.mat-toolbar-footer {
+  height: 4vh;
+  font-size: 100%;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+mat-button, span {
+  flex: available;
+  size: auto;
+  padding: 0;
+}
