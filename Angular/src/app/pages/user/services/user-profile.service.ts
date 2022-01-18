@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {map, Observable} from "rxjs";
 import {UserProfileDto} from "../user-profile-dto";
+import {environment} from "../../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserProfileService {
 
-  uriPublicGame = "https://localhost:7096/UserProfil"
+  uriPublicGame = environment.apiUrl + "/UserProfil"
   constructor(private http: HttpClient) { }
 
   getAllUserProfiles(): Observable<UserProfileDto[]>{

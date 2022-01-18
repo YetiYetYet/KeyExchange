@@ -1,5 +1,4 @@
 ﻿using API.Db;
-using API.DTO.Game;
 using API.DTO.Users;
 using API.Models;
 using API.Utils;
@@ -15,12 +14,12 @@ namespace API.Controllers.User;
 public class UserProfilController : ControllerBase
 {
     private readonly IConfiguration _configuration;
-    private readonly ContextApi _context;
+    private readonly ApplicationDbContext _applicationDbContext;
 
     
-    public UserProfilController(IConfiguration configuration, ContextApi dbContext)
+    public UserProfilController(IConfiguration configuration, ApplicationDbContext dbApplicationDbContext)
     {
-        _context = dbContext;
+        _applicationDbContext = dbApplicationDbContext;
         _configuration = configuration;
     }
     
@@ -28,17 +27,17 @@ public class UserProfilController : ControllerBase
     [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetAllGames()
     {
-        var user = await _context.ApplicationUsers.Where(user => user.IsPublic && !user.SoftDeleted).ToListAsync();
+        var user = await _applicationDbContext.Users.Where(user => user.IsPublic && !user.SoftDeleted).ToListAsync();
         var userProfileDtos = AutoMapperUtils.TupleAutoMapper<Models.User, UserProfileDto>(user, new List<(Type SourceType, Type Destination)>() {(typeof(Role), typeof(RoleDto))});
         var hidedUserProfil = userProfileDtos.Select(HideInfo).ToList();
         return Ok(hidedUserProfil);
     }
 
     [AllowAnonymous]
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<UserProfileDto>> GetUserByGuid(Guid id)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<UserProfileDto>> GetUserByGuid(int id)
     {
-        var user = await _context.ApplicationUsers.Where(user => user.Id == id).FirstOrDefaultAsync();
+        Models.User? user = await _applicationDbContext.Users.Where(user => user.Id == id).FirstOrDefaultAsync();
         if (user == null)
         {
             return NotFound("This user didn't exist");

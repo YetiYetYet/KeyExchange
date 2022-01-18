@@ -31,7 +31,7 @@
       <span class="example-spacer"></span>
       <button mat-raised-button>I want this game !</button>
     </mat-card-actions>
-    <mat-card-subtitle *ngIf="!game.isAvailable">This game is no longer available !</mat-card-subtitle>
-    <mat-card-subtitle *ngIf="!game.isAvailable">It was given the {{(game.givenDate) | date:'fullDate'}} to {{game.givenTo}}</mat-card-subtitle>
+    <mat-card-subtitle class="unavailable" *ngIf="!game.isAvailable">This game is no longer available !</mat-card-subtitle>
+    <mat-card-subtitle class="unavailable" *ngIf="!game.isAvailable">It was given the {{(game.givenDate) | date:'fullDate'}} to {{game.givenTo}}</mat-card-subtitle>
   </mat-card>
 </div>

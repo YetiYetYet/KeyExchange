@@ -1,23 +1,30 @@
 using API.Db;
+using API.Identity;
+using API.Models;
 using API.Service.GoogleApi;
 using API.Service.Mailing;
 using API.Service.User;
 using API.Utils.Jwt;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddDbContext<ContextApi>(options => options
-            .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-            .UseSnakeCaseNamingConvention());
-// Tuto
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IGoogleSearchService, GoogleSearchService>();
 builder.Services.AddScoped<IMailService, SmtpMailService>();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.AddCurrentUser();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddIdentity(builder.Configuration);
+builder.Services.AddDbContext<ApplicationDbContext>(options => options
+            .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+            .UseSnakeCaseNamingConvention());
+
+
+
+
 
 //Cors
 builder.Services.AddCors(option =>
@@ -40,7 +47,6 @@ builder.Services.AddSwaggerGen(options => {
     });
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
-builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddControllers();
 
 
@@ -59,9 +65,9 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = String.Empty;
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "app v1");
     });
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
+
+app.UseCurrentUser();
 
 app.UseCors();
 

@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {map, Observable} from "rxjs";
 import {GamePublicDto} from "../game-dto";
+import {environment} from "../../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
-  uriPublicGame = "https://localhost:7096/PublicGame"
+  uriPublicGame = environment.apiUrl + "/PublicGame"
 
   constructor(private http: HttpClient) { }
 

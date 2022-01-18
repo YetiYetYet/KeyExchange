@@ -1,8 +1,10 @@
 using System.Security.Claims;
 using API.Db;
-using API.DTO.Game;
+using API.Models;
+using API.DTO.GameDto;
 using API.Service.GoogleApi;
 using API.Service.User;
+using API.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,13 +16,13 @@ namespace API.Controllers.Game;
 [Authorize]
 public class GamesControllers : ControllerBase
 {
-    private readonly ContextApi _context;
+    private readonly ApplicationDbContext _applicationDbContext;
     private IGoogleSearchService _googleSearchService;
     private IUserService _userService;
 
-    public GamesControllers(ContextApi context, IGoogleSearchService googleSearchService, IUserService userService)
+    public GamesControllers(ApplicationDbContext applicationDbContext, IGoogleSearchService googleSearchService, IUserService userService)
     {
-        _context = context;
+        _applicationDbContext = applicationDbContext;
         _googleSearchService = googleSearchService;
         _userService = userService;
     }
@@ -29,7 +31,7 @@ public class GamesControllers : ControllerBase
     [HttpGet("admin"), Authorize(Roles = "root")]
     public async Task<ActionResult<IEnumerable<Models.Game>>> GetGamesAdmin()
     {
-        return await _context.Games.ToListAsync();
+        return await _applicationDbContext.Games.ToListAsync();
     }
 
     // GET: api/GamesControllers/5
@@ -37,31 +39,34 @@ public class GamesControllers : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Models.Game>> GetGame(Guid id)
     {
-        var game = await _context.Games.FindAsync(id);
-
+        var game = await _applicationDbContext.Games.FindAsync(id);
+        
         if (game == null)
         {
             return NotFound();
         }
-
+        
         return game;
     }
 
     // PUT: api/GamesControllers/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id:guid}"), Authorize(Roles = "root")]
-    public async Task<IActionResult> PutGame(Guid id, Models.Game game)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> PutGame(int id, GameDto gameDto)
     {
+        var game = await _applicationDbContext.Games.Where(g => g.Id == id && !g.SoftDeleted).FirstOrDefaultAsync();
         if (id != game.Id)
         {
             return BadRequest("This object is not the reference of this game");
         }
-
-        _context.Entry(game).State = EntityState.Modified;
+        Console.WriteLine("Before Auto Mapper :" + JsonUtils.ConstructJson(game));
+        game = AutoMapperUtils.BasicAutoMapper<GameDto, Models.Game>(gameDto);
+        Console.WriteLine("After Auto Mapper :" + JsonUtils.ConstructJson(game));
+        _applicationDbContext.Entry(game).State = EntityState.Modified;
 
         try
         {
-            await _context.SaveChangesAsync();
+            await _applicationDbContext.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException e)
         {
@@ -73,32 +78,49 @@ public class GamesControllers : ControllerBase
             throw new DbUpdateException(e.Message, e.InnerException);
         }
 
-        return NoContent();
+        return Ok();
     }
 
     // POST: api/GamesControllers
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPost, Authorize(Roles = "root")]
-    public async Task<ActionResult<Models.Game>> PostGame(Models.Game game)
+    [HttpPost]
+    public async Task<ActionResult<GameDto>> PostGame(PostGameDto gameDto)
     {
-        _context.Games.Add(game);
-        await _context.SaveChangesAsync();
-
+        Models.Game game = AutoMapperUtils.BasicAutoMapper<PostGameDto, Models.Game>(gameDto);
+        Models.Game gameInserted = _applicationDbContext.Games.Add(game).Entity;
+        await _applicationDbContext.SaveChangesAsync();
+        Console.WriteLine("game inserted : \n" + JsonUtils.ConstructJson(gameInserted));
+        Console.WriteLine("game base : \n" + JsonUtils.ConstructJson(game));
+        return Ok();
         return CreatedAtAction("GetGame", new { id = game.Id }, game);
     }
-
+    
     // DELETE: api/GamesControllers/5
-    [HttpDelete("{id}"), Authorize(Roles = "root")]
-    public async Task<IActionResult> DeleteGame(Guid id)
+    [HttpDelete("{id:guid}"), Authorize]
+    public async Task<IActionResult> SoftDeleteGame(Guid id)
     {
-        var game = await _context.Games.FindAsync(id);
+        Models.Game? game = await _applicationDbContext.Games.FindAsync(id);
         if (game == null)
         {
             return NotFound();
         }
+        game.SoftDeleted = true;
+        await _applicationDbContext.SaveChangesAsync();
 
-        _context.Games.Remove(game);
-        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    // DELETE: api/GamesControllers/5
+    [HttpDelete("hard-delete-{id:guid}"), Authorize(Roles = "root")]
+    public async Task<IActionResult> DeleteGame(Guid id)
+    {
+        Models.Game? game = await _applicationDbContext.Games.FindAsync(id);
+        if (game == null)
+        {
+            return NotFound();
+        }
+        _applicationDbContext.Games.Remove(game);
+        await _applicationDbContext.SaveChangesAsync();
 
         return NoContent();
     }
@@ -108,7 +130,7 @@ public class GamesControllers : ControllerBase
     [HttpGet("get-a-steam-link"), Authorize(Roles = "root")]
     public async Task<ActionResult<IEnumerable<Models.Game>>> GetASteamLink()
     {
-        var steamGameList = await _context.Games.Where(game => game.Platforme == "Steam" && (game.Link == null || game.Link == "No Link found")).Take(1).ToListAsync();
+        var steamGameList = await _applicationDbContext.Games.Where(game => game.Platforme == "Steam" && (game.Link == null || game.Link == "No Link found")).Take(1).ToListAsync();
         foreach (Models.Game game in steamGameList)
         {
             Console.WriteLine($"{game.Name}");
@@ -121,10 +143,7 @@ public class GamesControllers : ControllerBase
             game.TumbnailUrl = platformGameInfoDto.TumbnailUrl;
 
             game.GeneratedInfo = true;
-            game.LastModifiedOn = DateTime.Now;
-            
-            game.LastModifiedBy = Guid.Parse((ReadOnlySpan<char>)HttpContext.User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
-            await _context.SaveChangesAsync();
+            await _applicationDbContext.SaveChangesAsync();
         }
         return Ok(steamGameList);
     }
@@ -133,7 +152,7 @@ public class GamesControllers : ControllerBase
     [HttpGet("get-a-blizzard-link"), Authorize(Roles = "root")]
     public async Task<ActionResult<IEnumerable<Models.Game>>> GetABlizzardLink()
     {
-        var steamGameList = await _context.Games.Where(game => game.Platforme == "Blizzard" && (game.Link == null || game.Link == "No Link found")).Take(1).ToListAsync();
+        var steamGameList = await _applicationDbContext.Games.Where(game => game.Platforme == "Blizzard" && (game.Link == null || game.Link == "No Link found")).Take(1).ToListAsync();
         foreach (Models.Game game in steamGameList)
         {
             Console.WriteLine($"{game.Name}");
@@ -146,16 +165,13 @@ public class GamesControllers : ControllerBase
             game.TumbnailUrl = platformGameInfoDto.TumbnailUrl;
 
             game.GeneratedInfo = true;
-            game.LastModifiedOn = DateTime.Now;
-            
-            game.LastModifiedBy = Guid.Parse((ReadOnlySpan<char>)HttpContext.User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
-            await _context.SaveChangesAsync();
+            await _applicationDbContext.SaveChangesAsync();
         }
         return Ok(steamGameList);
     }
 
-    private bool GameExists(Guid id)
+    private bool GameExists(int id)
     {
-        return _context.Games.Any(e => e.Id == id);
+        return _applicationDbContext.Games.Any(e => e.Id == id);
     }
 }

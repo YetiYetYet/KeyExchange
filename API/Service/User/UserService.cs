@@ -5,11 +5,16 @@ namespace API.Service.User;
 public class UserService : IUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-
+    private ClaimsPrincipal? _user;
+    public string? Name => _user?.Identity?.Name;
+    private Guid _userId = Guid.Empty;
+    
     public UserService(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }
+    
+    
 
     public string GetMyName()
     {

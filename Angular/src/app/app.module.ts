@@ -13,6 +13,11 @@ import { GameComponent } from './pages/game/game.component';
 import {HttpClientModule} from "@angular/common/http";
 import { UserComponent } from './pages/user/user.component';
 import { UserProfilesComponent } from './pages/user/user-profiles/user-profiles.component';
+import { GameCardComponent } from './pages/game/game-card/game-card.component';
+import { RegisterComponent } from './pages/register/register.component';
+import { LoginComponent } from './pages/login/login.component';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import { EqualValidator } from './core/Validators/equal-validator.directive';
 
 @NgModule({
   declarations: [
@@ -23,15 +28,21 @@ import { UserProfilesComponent } from './pages/user/user-profiles/user-profiles.
     GameComponent,
     UserComponent,
     UserProfilesComponent,
+    GameCardComponent,
+    RegisterComponent,
+    LoginComponent,
+    EqualValidator,
   ],
-    imports: [
-        BrowserModule,
-        MaterialModule,
-        BrowserAnimationsModule,
-        AppRoutingModule,
-        SharedModule,
-        HttpClientModule
-    ],
+  imports: [
+    BrowserModule,
+    MaterialModule,
+    BrowserAnimationsModule,
+    AppRoutingModule,
+    SharedModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

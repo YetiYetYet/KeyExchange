@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using API.Models;
@@ -9,36 +10,6 @@ namespace API.Utils.Jwt;
 
 public static class JwtUtils
 {
-    public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration config)
-    {
-        services.Configure<JwtSettings>(config.GetSection($"SecuritySettings:{nameof(JwtSettings)}"));
-        var jwtSettings = config.GetSection($"SecuritySettings:{nameof(JwtSettings)}").Get<JwtSettings>();
-        if (string.IsNullOrEmpty(jwtSettings.Key))
-            throw new InvalidOperationException("No Key defined in JwtSettings config.");
-        byte[] key = Encoding.ASCII.GetBytes(jwtSettings.Key);
-        _ = services
-            .AddAuthentication(authentication =>
-            {
-                authentication.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                authentication.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(bearer =>
-            {
-                bearer.RequireHttpsMetadata = false;
-                bearer.SaveToken = true;
-                bearer.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = false,
-                    
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    RoleClaimType = ClaimTypes.Role,
-                };
-            });
-        return services;
-    }
-    
     public static string CreateToken(User user, string secret, int expMin = 60)
     {
         var claims = new List<Claim>
@@ -46,6 +17,7 @@ public static class JwtUtils
             new(ClaimTypes.Name, user.Username),
             new(ClaimTypes.Role, user.Role.Key),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new (ClaimTypes.Email, user.Email)
         };
 
         SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(secret));

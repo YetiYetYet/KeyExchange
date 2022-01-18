@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using API.DTO.Game;
+using API.DTO.GameDto;
 using API.Utils;
 using Newtonsoft.Json;
 using NuGet.Protocol;

@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Nodes;
-using API.DTO.Game;
+using API.DTO.GameDto;
 
 namespace API.Service.GoogleApi;
 

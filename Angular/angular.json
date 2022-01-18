@@ -11,6 +11,9 @@
         },
         "@schematics/angular:component": {
           "module": "app"
+        },
+        "@schematics/angular:directive": {
+          "module": "app"
         }
       },
       "root": "",
