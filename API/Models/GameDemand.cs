@@ -13,7 +13,7 @@ public class GameDemand : IBaseEntity, ISoftDelete
     public int? CreatedBy { get; set; }
     [ForeignKey("user_id")]
     public int? UserId { get; set; } // Foreign key
-    public User? User { get; set; } // Navigation parameter
+    public ApplicationUser? User { get; set; } // Navigation parameter
     [ForeignKey("game_id")]
     public Guid? GameId { get; set; } // Foreign key
     public Game? Game { get; set; } // Navigation parameter
@@ -33,7 +33,9 @@ public class GameDemandEntityConfiguration : Db.Entity.BaseEntityConfiguration<G
     public override void Configure(EntityTypeBuilder<GameDemand> builder)
     {
         base.Configure(builder);
-        builder.HasOne(gameDemand => gameDemand.User).WithMany(user => user.GameDemands).HasForeignKey(gameDemand => gameDemand.UserId);
-        builder.HasOne(gameDemand => gameDemand.Game).WithMany(game => game.GameDemands).HasForeignKey(gameDemand => gameDemand.UserId);
+        builder.HasOne(gameDemand => gameDemand.User)
+            .WithMany(user => user.GameDemands).HasForeignKey(gameDemand => gameDemand.UserId);
+        builder.HasOne(gameDemand => gameDemand.Game)
+            .WithMany(game => game.GameDemands).HasForeignKey(gameDemand => gameDemand.UserId);
     }
 }

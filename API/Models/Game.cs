@@ -13,7 +13,7 @@ public class Game : IBaseEntity, ISoftDelete
     public int? CreatedBy { get; set; }
     [ForeignKey("user_id")]
     public int? UserId { get; set; } // Foreign key
-    public User? User { get; set; } // reference navigation
+    public ApplicationUser? ApplicationUser { get; set; } // reference navigation
     public DateTime? CreatedOn { get; set; }
     public int? LastModifiedBy { get; set; }
     public DateTime? LastModifiedOn { get; set; }
@@ -39,6 +39,13 @@ public class Game : IBaseEntity, ISoftDelete
     public bool SoftDeleted { get; set; } = false;
     public DateTime? DeletedOn { get; set; }
     public int? DeletedBy { get; set; }
+
+    public override string ToString()
+    {
+        return $"{nameof(Id)}: {Id}, {nameof(CreatedBy)}: {CreatedBy}, {nameof(UserId)}: {UserId}, {nameof(ApplicationUser)}: {ApplicationUser}, {nameof(CreatedOn)}: {CreatedOn}, {nameof(LastModifiedBy)}: {LastModifiedBy}, {nameof(LastModifiedOn)}: {LastModifiedOn}, {nameof(IsAvailable)}: {IsAvailable}, {nameof(Name)}: {Name}, {nameof(Platforme)}: {Platforme}, {nameof(GeneratedInfo)}: {GeneratedInfo}, {nameof(Title)}: {Title}, {nameof(Link)}: {Link}, {nameof(Description)}: {Description}, {nameof(Price)}: {Price}, {nameof(Reviews)}: {Reviews}, {nameof(TumbnailUrl)}: {TumbnailUrl}, {nameof(Key)}: {Key}, {nameof(ObtenaidBy)}: {ObtenaidBy}, {nameof(PublicComment)}: {PublicComment}, {nameof(OwnerComment)}: {OwnerComment}, {nameof(AdminComment)}: {AdminComment}, {nameof(GameDemands)}: {GameDemands}, {nameof(ReceivedDate)}: {ReceivedDate}, {nameof(GivenDate)}: {GivenDate}, {nameof(GivenTo)}: {GivenTo}, {nameof(SoftDeleted)}: {SoftDeleted}, {nameof(DeletedOn)}: {DeletedOn}, {nameof(DeletedBy)}: {DeletedBy}";
+    }
+    
+    
 }
 
 public class GameEntityConfiguration : Db.Entity.BaseEntityConfiguration<Game>
@@ -46,7 +53,7 @@ public class GameEntityConfiguration : Db.Entity.BaseEntityConfiguration<Game>
     public override void Configure(EntityTypeBuilder<Game> builder)
     {
         base.Configure(builder);
-        builder.HasOne(game => game.User)
+        builder.HasOne(game => game.ApplicationUser)
             .WithMany(user => user.Games)
             .HasForeignKey(game => game.UserId);
     }

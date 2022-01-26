@@ -1,0 +1,8 @@
+﻿namespace API.Identity.Dto;
+
+public class RoleRequest
+{
+    public int? Id { get; set; }
+    public string Name { get; set; } = default!;
+    public string? Description { get; set; }
+}

@@ -1,0 +1,7 @@
+﻿namespace API.Identity.Dto;
+
+public class PermissionDto
+{
+    public string? Permission { get; set; }
+    public string? Description { get; set; }
+}

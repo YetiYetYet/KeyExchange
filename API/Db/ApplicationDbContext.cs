@@ -1,5 +1,7 @@
+using System.Data;
 using API.Db.Entity;
 using API.Db.Entity.Entity.Interface;
+using API.Identity.Models;
 using API.Models;
 using API.Service.User;
 using Microsoft.AspNetCore.Identity;
@@ -8,12 +10,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Db;
 
-public class ApplicationDbContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, IdentityUserRole<int>, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int, IdentityUserClaim<int>, IdentityUserRole<int>, IdentityUserLogin<int>, ApplicationRoleClaim, IdentityUserToken<int>>
 {
     private readonly IConfiguration _configuration;
-    
-    public DbSet<GameDemand> GameDemands { get; set; }
-    public DbSet<Game> Games { get; set; }
+    public IDbConnection Connection => Database.GetDbConnection();
+
+    public DbSet<GameDemand> GameDemands => Set<GameDemand>();
+    public DbSet<Game> Games  => Set<Game>();
     
     private readonly ICurrentUser _currentUserService;
 
@@ -30,14 +33,14 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, int, IdentityU
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("keys_exchange_test_identity");
-
-        modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new RoleGameEntityConfiguration());
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+        modelBuilder.ApplyIdentityConfiguration();
+        modelBuilder.HasDefaultSchema("keys_exchange_entity");
         modelBuilder.ApplyConfiguration(new GameEntityConfiguration());
         modelBuilder.ApplyConfiguration(new GameDemandEntityConfiguration());
 
-        base.OnModelCreating(modelBuilder);
+        
     }
     
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
@@ -64,6 +67,7 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, int, IdentityU
                     {
                         softDelete.DeletedBy = currentUserId;
                         softDelete.DeletedOn = DateTime.Now;
+                        softDelete.SoftDeleted = true;
                         entry.State = EntityState.Modified;
                     }
                     break;

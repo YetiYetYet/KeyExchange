@@ -17,11 +17,325 @@ namespace API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("keys_exchange_test_identity")
+                .HasDefaultSchema("keys_exchange_entity")
                 .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("API.Identity.Models.ApplicationRoleClaim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("claim_type");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("claim_value");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_on");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_on");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Group")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("group");
+
+                    b.Property<int?>("LastModifiedBy")
+                        .HasColumnType("int")
+                        .HasColumnName("last_modified_by");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("last_modified_on");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int")
+                        .HasColumnName("role_id");
+
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("soft_deleted");
+
+                    b.HasKey("Id")
+                        .HasName("pk_role_claims");
+
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("ix_role_claims_role_id");
+
+                    b.ToTable("RoleClaims", "IDENTITY");
+                });
+
+            modelBuilder.Entity("API.Models.ApplicationRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("concurrency_stamp");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_on");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_on");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("key");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("last_modified_by");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("last_modified_on");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("normalized_name");
+
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("soft_deleted");
+
+                    b.Property<DateTime?>("ValidUpto")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("valid_upto");
+
+                    b.HasKey("Id")
+                        .HasName("pk_roles");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[normalized_name] IS NOT NULL");
+
+                    b.ToTable("Roles", "IDENTITY");
+                });
+
+            modelBuilder.Entity("API.Models.ApplicationUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int")
+                        .HasColumnName("access_failed_count");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("concurrency_stamp");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_on");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_on");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Discord")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("discord");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("email");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit")
+                        .HasColumnName("email_confirmed");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("first_name");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_public");
+
+                    b.Property<DateTime?>("LastLogin")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("last_login");
+
+                    b.Property<int?>("LastModifiedBy")
+                        .HasColumnType("int")
+                        .HasColumnName("last_modified_by");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("last_modified_on");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("last_name");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit")
+                        .HasColumnName("lockout_enabled");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("lockout_end");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("normalized_email");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("normalized_user_name");
+
+                    b.Property<string>("OtherLink")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("other_link");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("password_hash");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("phone_number");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit")
+                        .HasColumnName("phone_number_confirmed");
+
+                    b.Property<string>("PictureUri")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("picture_uri");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("security_stamp");
+
+                    b.Property<bool>("ShowDiscord")
+                        .HasColumnType("bit")
+                        .HasColumnName("show_discord");
+
+                    b.Property<bool>("ShowEmail")
+                        .HasColumnType("bit")
+                        .HasColumnName("show_email");
+
+                    b.Property<bool>("ShowFirstName")
+                        .HasColumnType("bit")
+                        .HasColumnName("show_first_name");
+
+                    b.Property<bool>("ShowLastName")
+                        .HasColumnType("bit")
+                        .HasColumnName("show_last_name");
+
+                    b.Property<bool>("ShowPhoneNumber")
+                        .HasColumnType("bit")
+                        .HasColumnName("show_phone_number");
+
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("soft_deleted");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit")
+                        .HasColumnName("two_factor_enabled");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("user_name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_users");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[normalized_user_name] IS NOT NULL");
+
+                    b.ToTable("Users", "IDENTITY");
+                });
 
             modelBuilder.Entity("API.Models.Game", b =>
                 {
@@ -146,7 +460,7 @@ namespace API.Migrations
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_games_user_id");
 
-                    b.ToTable("games", "keys_exchange_test_identity");
+                    b.ToTable("games", "keys_exchange_entity");
                 });
 
             modelBuilder.Entity("API.Models.GameDemand", b =>
@@ -216,310 +530,7 @@ namespace API.Migrations
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_game_demands_user_id");
 
-                    b.ToTable("game_demands", "keys_exchange_test_identity");
-                });
-
-            modelBuilder.Entity("API.Models.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("concurrency_stamp");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created_on")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int?>("DeletedBy")
-                        .HasColumnType("int")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("deleted_on");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("description");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_active");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("key");
-
-                    b.Property<Guid?>("LastModifiedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("last_modified_by");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("last_modified_on")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("normalized_name");
-
-                    b.Property<bool>("SoftDeleted")
-                        .HasColumnType("bit")
-                        .HasColumnName("soft_deleted");
-
-                    b.Property<DateTime?>("ValidUpto")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("valid_upto");
-
-                    b.HasKey("Id")
-                        .HasName("pk_asp_net_roles");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[normalized_name] IS NOT NULL");
-
-                    b.ToTable("AspNetRoles", "keys_exchange_test_identity");
-                });
-
-            modelBuilder.Entity("API.Models.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int")
-                        .HasColumnName("access_failed_count");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("concurrency_stamp");
-
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("int")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created_on")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int?>("DeletedBy")
-                        .HasColumnType("int")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("deleted_on");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Discord")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("discord");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("email");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit")
-                        .HasColumnName("email_confirmed");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("first_name");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_active");
-
-                    b.Property<bool>("IsPublic")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_public");
-
-                    b.Property<DateTime?>("LastLogin")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("last_login");
-
-                    b.Property<int?>("LastModifiedBy")
-                        .HasColumnType("int")
-                        .HasColumnName("last_modified_by");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("last_modified_on")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("last_name");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit")
-                        .HasColumnName("lockout_enabled");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("lockout_end");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("normalized_email");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("normalized_user_name");
-
-                    b.Property<string>("OtherLink")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("other_link");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("password");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("password_hash");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("phone_number");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit")
-                        .HasColumnName("phone_number_confirmed");
-
-                    b.Property<string>("PictureUri")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("picture_uri");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int")
-                        .HasColumnName("role_id");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("security_stamp");
-
-                    b.Property<bool>("ShowDiscord")
-                        .HasColumnType("bit")
-                        .HasColumnName("show_discord");
-
-                    b.Property<bool>("ShowEmail")
-                        .HasColumnType("bit")
-                        .HasColumnName("show_email");
-
-                    b.Property<bool>("ShowFirstName")
-                        .HasColumnType("bit")
-                        .HasColumnName("show_first_name");
-
-                    b.Property<bool>("ShowLastName")
-                        .HasColumnType("bit")
-                        .HasColumnName("show_last_name");
-
-                    b.Property<bool>("ShowPhoneNumber")
-                        .HasColumnType("bit")
-                        .HasColumnName("show_phone_number");
-
-                    b.Property<bool>("SoftDeleted")
-                        .HasColumnType("bit")
-                        .HasColumnName("soft_deleted");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit")
-                        .HasColumnName("two_factor_enabled");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("user_name");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("username");
-
-                    b.HasKey("Id")
-                        .HasName("pk_asp_net_users");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[normalized_user_name] IS NOT NULL");
-
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_asp_net_users_role_id");
-
-                    b.ToTable("AspNetUsers", "keys_exchange_test_identity");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("claim_type");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("claim_value");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int")
-                        .HasColumnName("role_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_asp_net_role_claims");
-
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_asp_net_role_claims_role_id");
-
-                    b.ToTable("AspNetRoleClaims", "keys_exchange_test_identity");
+                    b.ToTable("game_demands", "keys_exchange_entity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
@@ -544,12 +555,12 @@ namespace API.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_asp_net_user_claims");
+                        .HasName("pk_user_claims");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_asp_net_user_claims_user_id");
+                        .HasDatabaseName("ix_user_claims_user_id");
 
-                    b.ToTable("AspNetUserClaims", "keys_exchange_test_identity");
+                    b.ToTable("UserClaims", "IDENTITY");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
@@ -571,12 +582,12 @@ namespace API.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("LoginProvider", "ProviderKey")
-                        .HasName("pk_asp_net_user_logins");
+                        .HasName("pk_user_logins");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_asp_net_user_logins_user_id");
+                        .HasDatabaseName("ix_user_logins_user_id");
 
-                    b.ToTable("AspNetUserLogins", "keys_exchange_test_identity");
+                    b.ToTable("UserLogins", "IDENTITY");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
@@ -590,12 +601,12 @@ namespace API.Migrations
                         .HasColumnName("role_id");
 
                     b.HasKey("UserId", "RoleId")
-                        .HasName("pk_asp_net_user_roles");
+                        .HasName("pk_user_roles");
 
                     b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_asp_net_user_roles_role_id");
+                        .HasDatabaseName("ix_user_roles_role_id");
 
-                    b.ToTable("AspNetUserRoles", "keys_exchange_test_identity");
+                    b.ToTable("UserRoles", "IDENTITY");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
@@ -617,14 +628,24 @@ namespace API.Migrations
                         .HasColumnName("value");
 
                     b.HasKey("UserId", "LoginProvider", "Name")
-                        .HasName("pk_asp_net_user_tokens");
+                        .HasName("pk_user_tokens");
 
-                    b.ToTable("AspNetUserTokens", "keys_exchange_test_identity");
+                    b.ToTable("UserTokens", "IDENTITY");
+                });
+
+            modelBuilder.Entity("API.Identity.Models.ApplicationRoleClaim", b =>
+                {
+                    b.HasOne("API.Models.ApplicationRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_role_claims_roles_role_id");
                 });
 
             modelBuilder.Entity("API.Models.Game", b =>
                 {
-                    b.HasOne("API.Models.User", "User")
+                    b.HasOne("API.Models.ApplicationUser", "User")
                         .WithMany("Games")
                         .HasForeignKey("UserId")
                         .HasConstraintName("fk_games_users_user_id");
@@ -634,100 +655,78 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.GameDemand", b =>
                 {
+                    b.HasOne("API.Models.ApplicationUser", "User")
+                        .WithMany("GameDemands")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("fk_game_demands_users_user_id");
+
                     b.HasOne("API.Models.Game", "Game")
                         .WithMany("GameDemands")
                         .HasForeignKey("UserId")
                         .HasConstraintName("fk_game_demands_games_game_id1");
-
-                    b.HasOne("API.Models.User", "User")
-                        .WithMany("GameDemands")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("fk_game_demands_users_user_id");
 
                     b.Navigation("Game");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("API.Models.User", b =>
-                {
-                    b.HasOne("API.Models.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_users_roles_role_id");
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
-                {
-                    b.HasOne("API.Models.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_role_claims_asp_net_roles_role_id");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
-                    b.HasOne("API.Models.User", null)
+                    b.HasOne("API.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_claims_asp_net_users_user_id");
+                        .HasConstraintName("fk_user_claims_users_user_id");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
-                    b.HasOne("API.Models.User", null)
+                    b.HasOne("API.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_logins_asp_net_users_user_id");
+                        .HasConstraintName("fk_user_logins_users_user_id");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.HasOne("API.Models.Role", null)
+                    b.HasOne("API.Models.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_roles_asp_net_roles_role_id");
+                        .HasConstraintName("fk_user_roles_roles_role_id");
 
-                    b.HasOne("API.Models.User", null)
+                    b.HasOne("API.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_roles_asp_net_users_user_id");
+                        .HasConstraintName("fk_user_roles_users_user_id");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.HasOne("API.Models.User", null)
+                    b.HasOne("API.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
+                        .HasConstraintName("fk_user_tokens_users_user_id");
+                });
+
+            modelBuilder.Entity("API.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("GameDemands");
+
+                    b.Navigation("Games");
                 });
 
             modelBuilder.Entity("API.Models.Game", b =>
                 {
                     b.Navigation("GameDemands");
-                });
-
-            modelBuilder.Entity("API.Models.User", b =>
-                {
-                    b.Navigation("GameDemands");
-
-                    b.Navigation("Games");
                 });
 #pragma warning restore 612, 618
         }

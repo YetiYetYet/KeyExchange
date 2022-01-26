@@ -13,8 +13,10 @@ public class CurrentUserMiddleware : IMiddleware
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        _currentUser.SetUser(context.User);
-
+        var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+        Console.WriteLine(token);
+        _currentUser.SetUser(context);
+        
         await next(context);
     }
 }

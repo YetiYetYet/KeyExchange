@@ -1,10 +1,14 @@
 ﻿using System.Net;
+using System.Net.Mime;
 using System.Security.Claims;
 using System.Text;
 using API.Db;
+using API.Exception;
 using API.Models;
+using API.Service.User;
 using API.Utils.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,20 +16,40 @@ namespace API.Identity;
 
 public static class Startup
 {
-    internal static IServiceCollection AddCurrentUser(this IServiceCollection services) =>
-        services.AddScoped<CurrentUserMiddleware>();
-    
     internal static IApplicationBuilder UseCurrentUser(this IApplicationBuilder app) =>
         app.UseMiddleware<CurrentUserMiddleware>();
 
-    internal static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration config)
+    private static IServiceCollection AddCurrentUser(this IServiceCollection services) =>
+        services
+            .AddScoped<CurrentUserMiddleware>()
+            .AddScoped<ICurrentUser, CurrentUser>()
+            .AddScoped(sp => (ICurrentUserInitializer)sp.GetRequiredService<ICurrentUser>());
+
+    private static IServiceCollection AddPermissions(this IServiceCollection services) =>
+        services
+            .AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>()
+            .AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+    
+    internal static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration config)
     {
-        services.AddIdentityCore<User>()
-            .AddRoles<Role>()
+        services
+            .AddCurrentUser()
+            .AddPermissions()
+
+            // Must add identity before adding auth!
+            .AddIdentityy(config);
+
+        return services.AddJwtAuthentication(config);
+    }
+    
+
+    internal static IServiceCollection AddIdentityy(this IServiceCollection services, IConfiguration config)
+    {
+        services.AddIdentityCore<ApplicationUser>().AddRoles<ApplicationRole>().AddSignInManager()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-        services.AddJwtAuthentication(config);
         
+
         services.Configure<IdentityOptions>(options =>
         {
             // Lockout settings.
@@ -41,10 +65,11 @@ public static class Startup
             // SignIn settings.
             options.SignIn.RequireConfirmedEmail = false;
             options.SignIn.RequireConfirmedPhoneNumber = false;
-            // User settings.
+            // ApplicationUser settings.
             options.User.AllowedUserNameCharacters =
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
             options.User.RequireUniqueEmail = true;
+            
         });
 
         return services;
@@ -65,30 +90,29 @@ public static class Startup
             })
             .AddJwtBearer(bearer =>
             {
-                bearer.RequireHttpsMetadata = false;
+                bearer.RequireHttpsMetadata = true;
                 bearer.SaveToken = true;
                 bearer.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = false,
-
+                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
+                    ValidateLifetime = true,
                     ValidateAudience = false,
                     RoleClaimType = ClaimTypes.Role,
                 };
-                bearer.Events = new JwtBearerEvents
+                bearer.Events = new()
                 {
                     OnChallenge = context =>
                     {
                         context.HandleResponse();
                         if (!context.Response.HasStarted)
                         {
-                            throw new Exception($"{HttpStatusCode.Unauthorized}Authentication Failed.");
+                            throw new IdentityExecption.IdentityException("Authentication Failed.", statusCode: HttpStatusCode.Unauthorized);
                         }
-
                         return Task.CompletedTask;
                     },
-                    OnForbidden = _ => throw new Exception($"{HttpStatusCode.Forbidden} You are not authorized to access this resource."),
+                    OnForbidden = _ => throw new IdentityExecption.IdentityException("You are not authorized to access this resource.", statusCode: HttpStatusCode.Forbidden),
                     OnMessageReceived = context =>
                     {
                         var accessToken = context.Request.Query["access_token"];
@@ -101,9 +125,10 @@ public static class Startup
                         }
 
                         return Task.CompletedTask;
-                    }
+                    },
                 };
             });
+
         return services;
     }
 }
